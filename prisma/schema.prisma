@@ -1,0 +1,94 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+
+model User {
+  userId Int @id @default(autoincrement())
+  name String
+  email String @unique
+  password String
+  avatar String
+  role String
+  notes Note[]
+  projects Project[]
+  files File[]
+  images Image[]
+  createdAt DateTime @default(now())
+}
+
+model Project {
+  projectId Int @id @default(autoincrement())
+  name String
+  description String
+  repository String
+  userId Int
+  user User @relation(fields: [userId], references: [userId])
+  notes Note[]
+  files File[]
+  images Image[]
+  technologies ProjectTechnologies[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Note {
+  noteId Int @id @default(autoincrement())
+  title String
+  content String
+  projectId Int
+  project Project @relation(fields: [projectId], references: [projectId])
+  userId Int
+  user User @relation(fields: [userId], references: [userId])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model File {
+  fileId Int @id @default(autoincrement())
+  name String
+  path String
+  projectId Int
+  project Project @relation(fields: [projectId], references: [projectId])
+  userId Int
+  user User @relation(fields: [userId], references: [userId])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Image {
+  imageId Int @id @default(autoincrement())
+  name String
+  path String
+  projectId Int
+  project Project @relation(fields: [projectId], references: [projectId])
+  userId Int
+  user User @relation(fields: [userId], references: [userId])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ProjectTechnologies {
+  projectId Int
+  technologyId Int
+  project Project @relation(fields: [projectId], references: [projectId])
+  technology Technology @relation(fields: [technologyId], references: [technologyId])
+  @@id([projectId, technologyId])
+}
+
+model Technology {
+  technologyId Int @id @default(autoincrement())
+  name String
+  description String
+  projects ProjectTechnologies[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
